@@ -34,7 +34,7 @@ bool checkNB(int day, int month, int year) {
 }
 
 bool checkMaCB(string &macb) {
-    if (macb.length() != 5) return false;
+    if (macb.length() > 5) return false;
     for (char c : macb) {
         if (!isalpha(c) && !isdigit(c)) return false;
     }
