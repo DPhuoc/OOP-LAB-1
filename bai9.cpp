@@ -77,6 +77,15 @@ bool checkNG(int day, int month, int year) {
     return true;
 }
 
+/**
+ * @brief Thêm sổ tiết kiệm mới vào danh sách.
+ * 
+ * @details
+ * - Hàm này cho phép người dùng nhập thông tin chi tiết của một sổ tiết kiệm mới, bao gồm mã sổ, loại tiết kiệm, thông tin khách hàng và số tiền gửi.
+ * - Quá trình nhập có các kiểm tra tính hợp lệ của mã sổ, loại tiết kiệm, tên khách hàng, CMND, ngày gửi và số tiền gửi.
+ * - Sổ tiết kiệm hợp lệ sẽ được thêm vào danh sách.
+ * 
+ */
 void themSTK() {
     string maSo, loaiTietKiem, hoTenKhachHang, CMND;
     NgayGui ngaygui;
@@ -126,40 +135,169 @@ void themSTK() {
     arr.push_back(SoTietKiem({maSo, loaiTietKiem, hoTenKhachHang, CMND, ngaygui, soTienGui, 0.7, (2024 - ngaygui.nam) * 12 + 10 - ngaygui.thang}));
 }
 
+/**
+ * @brief Hiển thị thông tin chi tiết của một sổ tiết kiệm.
+ * 
+ * @details 
+ * - Hàm này in ra các thông tin của sổ tiết kiệm bao gồm mã sổ, loại tiết kiệm, họ tên khách hàng, số CMND, ngày mở sổ, lãi suất và số tiền hiện tại.
+ **/
 void xuat(const SoTietKiem& sotietiem) {
     cout << "\n-------------" << sotietiem.maSo << "----------------\n";
     cout << "Loại tiết kiệm: " << sotietiem.loaiTietKiem << endl;
     cout << "Họ và tên: " << sotietiem.hoTenKhachHang << endl;
     cout << "CMND: " << sotietiem.cmnd << endl;
     cout << "Ngày mở sổ: " << sotietiem.ngaygui.ngay << "/" << sotietiem.ngaygui.thang << "/" << sotietiem.ngaygui.nam << endl;
+    cout << "Lãi suất: " << sotietiem.laiSuat << endl;
     cout << "Số tiền còn lại: " << sotietiem.soTienGui << endl; 
 }
 
+/**
+ * @brief Hiển thị danh sách tất cả các sổ tiết kiệm.
+ * 
+ * @details 
+ * - Hàm này lặp qua danh sách các sổ tiết kiệm (`arr`) và gọi hàm `xuat` để in thông tin của từng sổ tiết kiệm.
+ **/
 void xuatDS() {
     for (auto i : arr) {
         xuat(i);
     }
 }
 
+/**
+ * @brief Cập nhật lãi suất cho một sổ tiết kiệm dựa trên mã sổ.
+ * 
+ * @details
+ * - Hàm này cho phép người dùng nhập mã sổ tiết kiệm và lãi suất mới. Nếu tìm thấy sổ tiết kiệm có mã trùng khớp, lãi suất của sổ đó sẽ được cập nhật.
+ **/
 void capNhatLS() {
+    double laisuat;
+    string maSo;
+    cout << "Nhập mã sổ cần đổi lãi suất: "; cin >> maSo;
+    cout << "Nhập lãi suất: "; cin >> laisuat;
 
+    for (auto &i : arr) {
+        if (i.maSo == maSo) i.laiSuat = laisuat;
+    }
 }
 
-double tinhTienLai(const SoTietKiem &stk, double laiSuat, int soThangGui) {
-    if (stk.loaiTietKiem == "ngan han" && soThangGui <= 6) {
-        return stk.soTienGui * laiSuat * soThangGui / 12;
-    } else if (stk.loaiTietKiem == "dai han" && soThangGui > 6) {
-        return stk.soTienGui * laiSuat * soThangGui / 12;
+/**
+ * @brief Tính tiền lãi của sổ tiết kiệm dựa trên loại tiết kiệm và số tháng gửi.
+ * 
+ * @details
+ * - Hàm này tính tiền lãi dựa trên hai loại tiết kiệm: "ngắn hạn" và "dài hạn". 
+ *   - Nếu sổ tiết kiệm là "ngắn hạn" và số tháng gửi nhỏ hơn hoặc bằng 6 tháng, tiền lãi sẽ được tính theo lãi suất đã cho và số tháng gửi.
+ *   - Nếu sổ tiết kiệm là "dài hạn" và số tháng gửi lớn hơn 6 tháng, tiền lãi cũng sẽ được tính theo lãi suất và số tháng gửi.
+ * - Số tiền lãi trả về là một số nguyên lớn.
+ **/
+long long tinhTienLai(const SoTietKiem &stk) {
+    if (stk.loaiTietKiem == "ngan han" && stk.soThangGui <= 6) {
+        return stk.soTienGui * stk.laiSuat * stk.soThangGui / 12 * 1ll;
+    } else if (stk.loaiTietKiem == "dai han" && stk.soThangGui > 6) {
+        return stk.soTienGui * stk.laiSuat * stk.soThangGui / 12 * 1ll;
     }
     return 0;
 }
 
+/**
+ * @brief Tính và in ra tiền lãi của sổ tiết kiệm dựa trên mã sổ.
+ * 
+ * @details
+ * - Hàm này cho phép người dùng nhập mã sổ tiết kiệm và tính toán tiền lãi dựa trên thông tin sổ.
+ **/
+void tinhTienLaiSTK() {
+    string maSo;
+    cout << "Nhập mã sổ cần tính tiền lãi: "; cin >> maSo;
+    for (auto i : arr) {
+        if (i.maSo == maSo) cout << "Tiền lãi: " << tinhTienLai(i) << endl;
+    }
+}
+
+/**
+ * @brief Rút tiền từ sổ tiết kiệm dựa trên mã sổ và số tiền muốn rút.
+ * 
+ * @details
+ * - Hàm này cho phép người dùng nhập mã sổ tiết kiệm và số tiền muốn rút.
+ * - Nếu số tiền muốn rút lớn hơn số tiền trong sổ, in ra thông báo không đủ tiền để rút.
+ * - Nếu số tiền rút hợp lệ, trừ số tiền rút vào số tiền trong sổ và in ra thông báo rút tiền thành công.
+ **/
+void rutTien() {
+    string maSo;
+    long long soTienRut;
+    cout << "Nhập mã sổ cần rút tiền: "; cin >> maSo;
+    cout << "Nhập số tiền cần rút: "; cin >> soTienRut;
+    for (auto &i : arr) {
+        if (i.maSo == maSo) {
+            if (soTienRut > i.soTienGui) {
+                cout << "Không đủ tiền để rút\n";
+                return;
+            }
+
+            i.soTienGui -= soTienRut;
+            cout << "Đã rút thành công\n";
+        }
+    }
+}
+
+/**
+ * @brief Tìm và hiển thị thông tin sổ tiết kiệm dựa trên CMND của khách hàng.
+ * 
+ * @details
+ * - Người dùng nhập CMND cần tìm, sau đó hàm sẽ duyệt qua danh sách sổ tiết kiệm (`arr`).
+ * - Nếu tìm thấy sổ tiết kiệm có CMND khớp với dữ liệu nhập vào, hàm sẽ hiển thị thông tin chi tiết của sổ tiết kiệm đó.
+ **/ 
+void timSTKCMND() {
+    string CMND;
+    cout << "Nhập CMND của STK cần tìm: "; cin >> CMND;
+    for (auto i : arr) {
+        if (i.cmnd == CMND) xuat(i);
+    }
+}
+
+/**
+ * @brief Tìm và hiển thị thông tin sổ tiết kiệm trong khoảng thời gian gửi tiền được chỉ định.
+ * 
+ * @details
+ * - Người dùng nhập ngày bắt đầu và ngày kết thúc của khoảng thời gian cần tìm.
+ * - Hàm sẽ duyệt qua danh sách sổ tiết kiệm, kiểm tra ngày gửi của từng sổ.
+ * - Nếu ngày gửi nằm trong khoảng thời gian được chỉ định (bao gồm cả ngày bắt đầu và ngày kết thúc), hàm sẽ in thông tin chi tiết của sổ tiết kiệm đó.
+ **/
+void timSTKngayGui() {
+    NgayGui ngaybatdau, ngayketthuc;
+    while (true) {
+        cout << "Nhập ngày bắt đầu: (dd mm yyyy): "; cin >> ngaybatdau.ngay >> ngaybatdau.thang >> ngaybatdau.nam;
+        if (!checkNG(ngaybatdau.ngay, ngaybatdau.thang, ngaybatdau.nam)) cout << "Ngày này không tồn tại!!!\n";
+        else break;
+    }
+
+    while (true) {
+        cout << "Nhập ngày kết thúc: (dd mm yyyy): "; cin >> ngayketthuc.ngay >> ngayketthuc.thang >> ngayketthuc.nam;
+        if (!checkNG(ngayketthuc.ngay, ngayketthuc.thang, ngayketthuc.nam)) cout << "Ngày này không tồn tại!!!\n";
+        else break;
+    }
+
+    for (auto i : arr) {
+        if (i.ngaygui.ngay >= ngaybatdau.ngay && i.ngaygui.ngay <= ngayketthuc.ngay && i.ngaygui.thang >= ngaybatdau.thang && i.ngaygui.thang <= ngayketthuc.thang && i.ngaygui.nam >= ngaybatdau.nam && i.ngaygui.nam <= ngayketthuc.nam) xuat(i);
+    }
+}
+
+/**
+ * @brief Sắp xếp danh sách sổ tiết kiệm theo số tiền gửi giảm dần.
+ * 
+ * @details
+ * - Sổ có số tiền gửi lớn hơn sẽ được sắp xếp lên trước.
+ **/
 void sapXepTheoSoTien() {
     sort(arr.begin(), arr.end(), [](const SoTietKiem &a, const SoTietKiem &b) {
         return a.soTienGui > b.soTienGui;
     });
 }
 
+/**
+ * @brief Sắp xếp danh sách sổ tiết kiệm theo ngày mở sổ tăng dần.
+ * 
+ * @details
+ * - Thứ tự sắp xếp: năm, tháng, sau đó đến ngày (tăng dần).
+ **/
 void sapXepTheoNgayMoSo() {
     sort(arr.begin(), arr.end(), [](const SoTietKiem &a, const SoTietKiem &b) {
         if (a.ngaygui.nam != b.ngaygui.nam) return a.ngaygui.nam < b.ngaygui.nam;
@@ -176,8 +314,9 @@ string menu =
 "4. Tính toán tiền lãi\n"
 "5. Rút tiền\n"
 "6. Tìm kiếm sổ tiết kiệm theo CMND\n"
-"7. Sắp xếp sổ tiết kiệm theo số tiền gửi giảm dần\n"
-"8. Sắp xếp sổ tiết kiệm theo ngày mở sổ tăng dần\n"
+"7. Tìm kiếm sổ tiết kiệm trong một khoảng thời gian\n"
+"8. Sắp xếp sổ tiết kiệm theo số tiền gửi giảm dần\n"
+"9. Sắp xếp sổ tiết kiệm theo ngày mở sổ tăng dần\n"
 "0. Thoát\n"
 "======================\n"
 "Nhập lựa chọn của bạn: ";
@@ -200,15 +339,21 @@ int main() {
             capNhatLS();
             break;
         case 4:
+            tinhTienLaiSTK();
             break;
         case 5: 
+            rutTien();
             break;
         case 6:
+            timSTKCMND();
             break;
         case 7: 
-            sapXepTheoSoTien();
+            timSTKngayGui();
             break;
         case 8: 
+            sapXepTheoSoTien();
+            break;
+        case 9:
             sapXepTheoNgayMoSo();
             break;
 

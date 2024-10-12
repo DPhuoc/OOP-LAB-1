@@ -24,6 +24,21 @@ struct ChuyenBay {
 vector <ChuyenBay> arr;
 set <string> list_macb;
 
+/**
+ * @brief Kiểm tra tính hợp lệ của một ngày, tháng, năm cụ thể.
+ * 
+ * @details
+ * - Ngày, tháng, và năm sẽ được kiểm tra theo các điều kiện:
+ *   - Năm phải lớn hơn hoặc bằng 0.
+ *   - Tháng phải nằm trong khoảng từ 1 đến 12.
+ *   - Ngày phải nằm trong khoảng hợp lý theo số ngày của tháng.
+ * 
+ * @param day Ngày cần kiểm tra.
+ * @param month Tháng cần kiểm tra.
+ * @param year Năm cần kiểm tra.
+ * 
+ * @return `true` nếu ngày, tháng, năm hợp lệ; ngược lại, trả về `false`.
+ */
 bool checkNB(int day, int month, int year) {
     if (year < 0) return false;
     if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) days[1] = 29;
@@ -33,6 +48,19 @@ bool checkNB(int day, int month, int year) {
     return true;
 }
 
+/**
+ * @brief Kiểm tra tính hợp lệ của mã sổ tiết kiệm (mã CB).
+ * 
+ * @details
+ * - Hàm này kiểm tra xem chuỗi mã sổ tiết kiệm có hợp lệ hay không theo các tiêu chí:
+ *   - Độ dài của mã phải nhỏ hơn hoặc bằng 5 ký tự.
+ *   - Mã chỉ được chứa các ký tự chữ cái (chữ thường hoặc chữ hoa) và chữ số.
+ *   - Mã không được chứa các ký tự đặc biệt hay khoảng trắng.
+ * 
+ * @param macb Chuỗi mã sổ tiết kiệm cần kiểm tra.
+ * 
+ * @return `true` nếu mã hợp lệ; ngược lại, trả về `false`.
+ **/
 bool checkMaCB(string &macb) {
     if (macb.length() > 5) return false;
     for (char c : macb) {
@@ -41,21 +69,44 @@ bool checkMaCB(string &macb) {
     return true;
 }
 
+/**
+ * @brief Kiểm tra tính hợp lệ của giờ và phút.
+ * 
+ * @param gio Giờ cần kiểm tra.
+ * @param phut Phút cần kiểm tra.
+ * 
+ * @return `true` nếu giờ và phút hợp lệ; ngược lại, trả về `false`.
+ **/
 bool checkGB(int &gio, int &phut) {
     if (gio < 0 || gio > 24 || phut < 0 || phut > 60) return false;
     return true;
 }
 
+/**
+ * @brief Kiểm tra tính hợp lệ của địa điểm.
+ * 
+ * @param diadiem Chuỗi ký tự chứa tên địa điểm cần kiểm tra.
+ * 
+ * @return `true` nếu địa điểm hợp lệ; ngược lại, trả về `false`.
+ * */
 bool checkLoca(string &diadiem) {
     if (diadiem.length() < 0 || diadiem.length() > 20) return false;
-
     for (char c : diadiem) {
         if (!isalpha(c) && !isspace(c)) return false;
     }
-
     return true;
 }
 
+/**
+ * @brief Thêm chuyến bay vào danh sách.
+ * 
+ * @details
+ * - Hàm này cho phép người dùng nhập thông tin về các chuyến bay cần thêm vào danh sách.
+ * - Các thông tin cần nhập bao gồm: mã chuyến bay, ngày bay, giờ bay, nơi đi và nơi đến.
+ * - Các kiểm tra được thực hiện để đảm bảo tính hợp lệ của các thông tin như mã chuyến bay, ngày, giờ và địa điểm.
+ * - Nếu thông tin không hợp lệ, người dùng được yêu cầu nhập lại cho đến khi đúng.
+ * - Mỗi chuyến bay được lưu vào danh sách `arr`, và mã chuyến bay được lưu vào `list_macb` để kiểm tra trùng lặp.
+ */
 void ThemChuyenBay() {
     int n;
     cout << "Số lượng chuyến bay cần thêm: "; cin >> n;
@@ -98,6 +149,13 @@ void ThemChuyenBay() {
     }
 }
 
+/**
+ * @brief In ra thông tin chi tiết của một chuyến bay.
+ * 
+ * @details
+ * - Hàm này sẽ hiển thị các thông tin của chuyến bay bao gồm: mã chuyến bay, ngày bay, giờ bay, nơi đi và nơi đến.
+ * - Các thông tin được in ra màn hình theo định dạng dễ đọc.
+ **/
 void inThongTin(const ChuyenBay& a) {
     cout << "---------------" << a.macb << "------------------\n";
     cout << "Ngày bay: " << a.ngaybay.ngay << "/" << a.ngaybay.thang << "/" << a.ngaybay.nam << endl;
@@ -122,6 +180,11 @@ bool cmp(const ChuyenBay& a, const ChuyenBay& b) {
     return a.giobay.phut < b.giobay.phut;
 }
 
+/**
+ * @brief Sắp xếp và hiển thị thông tin các chuyến bay theo thứ tự quy định.
+ * @sorting_criteria
+ * - Tiêu chí sắp xếp được xác định trong hàm `cmp`, ví dụ có thể là theo mã chuyến bay, thời gian bay, hoặc các tiêu chí khác.
+ */
 void sapXepChuyenBay() {
     sort(arr.begin(), arr.end(), cmp);
 
@@ -130,6 +193,20 @@ void sapXepChuyenBay() {
     }
 }
 
+/**
+ * @brief Tìm kiếm và hiển thị thông tin các chuyến bay dựa trên tiêu chí tìm kiếm do người dùng chọn.
+ * 
+ * @details
+ * - Hàm này cho phép người dùng tìm kiếm chuyến bay bằng cách lựa chọn tiêu chí tìm kiếm như: mã chuyến bay, nơi đi, hoặc nơi đến.
+ * - Các chuyến bay phù hợp với tiêu chí tìm kiếm sẽ được hiển thị đầy đủ thông tin.
+ * - Chương trình cung cấp menu cho người dùng lựa chọn và yêu cầu nhập dữ liệu đầu vào tương ứng với tiêu chí đã chọn.
+ * 
+ * @menu
+ * - 1: Tìm kiếm theo mã chuyến bay.
+ * - 2: Tìm kiếm theo nơi đi.
+ * - 3: Tìm kiếm theo nơi đến.
+ * - 0: Thoát khỏi chức năng tìm kiếm.
+ */
 void timKiemChuyenBay() {
     string menu = 
     "\n======== MENU ========\n"
@@ -176,6 +253,13 @@ void timKiemChuyenBay() {
     } while (choic != 0);
 }
 
+/**
+ * @brief Tìm kiếm và hiển thị các chuyến bay dựa trên ngày bay và nơi khởi hành.
+ * 
+ * @details
+ * - Hàm này yêu cầu người dùng nhập ngày bay và nơi đi, sau đó sẽ tìm kiếm các chuyến bay có cùng ngày bay và nơi đi với thông tin người dùng nhập.
+ * - Nếu tìm thấy các chuyến bay phù hợp, thông tin chi tiết của các chuyến bay đó sẽ được in ra màn hình.
+ */
 void findAll() {
     NgayBay ngaybay;
     string noidi;
@@ -189,6 +273,13 @@ void findAll() {
     }
 }
 
+/**
+ * @brief Đếm số lượng chuyến bay từ một địa điểm đến một địa điểm khác.
+ * 
+ * @details
+ * - Hàm này yêu cầu người dùng nhập vào nơi đi và nơi đến, sau đó sẽ đếm số lượng các chuyến bay có điểm khởi hành và điểm đến phù hợp với thông tin đã nhập.
+ * - Kết quả sẽ được in ra là số lượng chuyến bay thỏa mãn điều kiện.
+ */
 void DemChuyenBay() {
     string noidi, noiden;
     cin.ignore();
